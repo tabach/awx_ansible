@@ -1,5 +1,0 @@
-- name: create_directory
-  hosts: all
-  tasks:
-      - name: echo variable
-        shell: echo {{ SUDO_USER }} >> /opt/test.txt
