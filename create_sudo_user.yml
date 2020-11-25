@@ -1,0 +1,27 @@
+- name: Create sudo user
+  hosts: all
+  tasks:
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: ^%wheel
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    - name: Add user
+      user:
+        name: "{{ SUDO_USER }}"
+        password: "{{ newpassword|password_hash('sha512') }}"
+        generate_ssh_key: yes
+        groups: wheel
+        update_password: always
+        append: yes 
+        state: present
+        create_home: yes
+      register: new_user
+    - name: Deploy SSH Key
+      authorized_key: 
+         user: "{{ SUDO_USER }}" 
+         state: present
+         key: "{{ new_user.ssh_public_key }}"
+    - name: Force user pwd expired
+      shell: chage -d 0 "{{ SUDO_USER }}"
