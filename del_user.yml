@@ -1,0 +1,9 @@
+- name: Create sudo user
+  hosts: all
+  tasks:
+    - name: Removing user inactive users
+      user:
+        name: "{{ USER }}"
+        state: absent
+        remove: yes        # Remove home user if yes; default no
+        force: yes        # works with remove is yes
